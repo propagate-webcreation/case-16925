@@ -1,0 +1,12 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+.turbo/
+dist/
+coverage/
+.vercel/
+
+# 環境変数
+.env
+.env.*
