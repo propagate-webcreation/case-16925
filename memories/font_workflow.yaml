@@ -1,0 +1,285 @@
+# フォント自動化ワークフロー v2.0（複数選択対応）
+
+## AIアシスタントの動作フロー
+
+### ユーザーが「かわいいフォントにしたい」などと言った場合の対応手順
+
+#### **重要：チャット内で完結させる**
+
+ユーザーとの対話でフォントを選択し、コマンドを自動実行します。
+
+---
+
+## 📋 実行フロー
+
+### ステップ1：プロジェクト初期設定を確認・実行
+
+```bash
+npm run setup-font-project
+```
+
+このコマンドは何度実行しても安全（冪等性あり）
+
+---
+
+### ステップ2：フォント選択を提示
+
+#### ユーザーが「かわいいフォントにしたい」と言った場合：
+
+**AIの応答例：**
+
+```
+かわいいフォントですね！
+見出し用フォントを選んでください：
+
+1) Zen Maru Gothic（丸ゴシック） - やわらかい印象
+2) M PLUS Rounded 1c（丸み） - 親しみやすい
+3) Hannari（はんなり） - 日本的なやさしさ
+
+どれにしますか？（番号で答えてください）
+```
+
+**ユーザーが「1」と答えた場合：**
+
+```
+承知しました！次は本文用フォントを選んでください：
+
+1) Zen Kaku Gothic New（ゴシック） - 読みやすい
+2) Kosugi Maru（丸ゴシック） - やわらかい
+3) Kokoro（やさしい） - ほのぼの
+
+どれにしますか？（番号で答えてください）
+```
+
+**ユーザーが「2」と答えた場合：**
+
+```
+承知しました！
+見出し：Zen Maru Gothic
+本文：Kosugi Maru
+でセットアップします。
+```
+
+---
+
+### ステップ3：コマンドを実行
+
+```bash
+npm run setup-font-project && node scripts/setup-fonts.js kawaii --display=zen-maru --body=kosugi-maru
+```
+
+---
+
+## 🎨 各カテゴリの選択肢マッピング
+
+### kawaii（かわいい）
+
+**見出し用：**
+- 選択肢1 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
+- 選択肢2 → `mplus-rounded` → M PLUS Rounded 1c（丸み）
+- 選択肢3 → `hannari` → Hannari（はんなり）
+
+**本文用：**
+- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+- 選択肢2 → `kosugi-maru` → Kosugi Maru（丸ゴシック）
+- 選択肢3 → `kokoro` → Kokoro（やさしい）
+
+### elegant（上品・高級感）
+
+**見出し用：**
+- 選択肢1 → `cormorant` → Cormorant Garamond（セリフ体）
+- 選択肢2 → `shippori-mincho` → Shippori Mincho（明朝体）
+- 選択肢3 → `noto-serif` → Noto Serif JP（明朝体）
+
+**本文用：**
+- 選択肢1 → `noto-serif` → Noto Serif JP（明朝体）
+- 選択肢2 → `shippori-mincho-b1` → Shippori Mincho B1（明朝体）
+- 選択肢3 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+
+### natural（やさしい・ナチュラル）
+
+**見出し用：**
+- 選択肢1 → `noto-sans` → Noto Sans JP（ゴシック）
+- 選択肢2 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
+- 選択肢3 → `sawarabi-gothic` → Sawarabi Gothic（さわらび）
+
+**本文用：**
+- 選択肢1 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
+- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
+
+### cool（かっこいい）
+
+**見出し用：**
+- 選択肢1 → `poppins` → Poppins（モダン）
+- 選択肢2 → `ibm-plex` → IBM Plex Sans JP（テック）
+- 選択肢3 → `montserrat` → Montserrat（スタイリッシュ）
+
+**本文用：**
+- 選択肢1 → `noto-sans` → Noto Sans JP（ゴシック）
+- 選択肢2 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+
+### simple（シンプル）
+
+**見出し用：**
+- 選択肢1 → `inter` → Inter（モダン）
+- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
+- 選択肢3 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+
+**本文用：**
+- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
+
+### pop（ポップ）
+
+**見出し用：**
+- 選択肢1 → `zen-kaku-bold` → Zen Kaku Gothic New（太字）
+- 選択肢2 → `rocknroll` → RocknRoll One（ポップ）
+- 選択肢3 → `rampart` → Rampart One（インパクト）
+
+**本文用：**
+- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+- 選択肢2 → `mplus1p` → M PLUS 1p（読みやすい）
+
+### wa（和風）
+
+**見出し用：**
+- 選択肢1 → `shippori-mincho` → Shippori Mincho（明朝体）
+- 選択肢2 → `yuji-syuku` → Yuji Syuku（筆文字風）
+- 選択肢3 → `klee-one` → Klee One（手書き風）
+
+**本文用：**
+- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
+- 選択肢2 → `shippori-mincho-b1` → Shippori Mincho B1（明朝体）
+- 選択肢3 → `noto-serif` → Noto Serif JP（明朝体）
+
+---
+
+## 🤖 AIアシスタントの対応例
+
+### 例1：かわいいフォント
+
+```
+ユーザー：「かわいいフォントにしたい」
+
+AI：
+かわいいフォントですね！まず見出し用フォントを選んでください：
+
+1) Zen Maru Gothic（丸ゴシック） - やわらかい印象
+2) M PLUS Rounded 1c（丸み） - 親しみやすい  
+3) Hannari（はんなり） - 日本的なやさしさ
+
+ユーザー：「2」
+
+AI：
+次は本文用フォントを選んでください：
+
+1) Zen Kaku Gothic New（ゴシック） - 読みやすい
+2) Kosugi Maru（丸ゴシック） - やわらかい
+3) Kokoro（やさしい） - ほのぼの
+
+ユーザー：「2」
+
+AI：
+承知しました！
+見出し：M PLUS Rounded 1c
+本文：Kosugi Maru
+でセットアップします。
+
+[コマンド実行]
+npm run setup-font-project
+node scripts/setup-fonts.js kawaii --display=mplus-rounded --body=kosugi-maru
+```
+
+### 例2：上品なフォント
+
+```
+ユーザー：「上品なフォントにしたい」
+
+AI：
+上品なフォントですね！まず見出し用フォントを選んでください：
+
+1) Cormorant Garamond（セリフ体） - エレガント
+2) Shippori Mincho（明朝体） - 日本的な上品さ
+3) Noto Serif JP（明朝体） - 読みやすい明朝
+
+ユーザー：「1」
+
+AI：
+次は本文用フォントを選んでください：
+
+1) Noto Serif JP（明朝体） - 読みやすい
+2) Shippori Mincho B1（明朝体） - 上品
+3) Zen Kaku Gothic New（ゴシック） - モダン
+
+ユーザー：「1」
+
+AI：
+承知しました！
+見出し：Cormorant Garamond
+本文：Noto Serif JP
+でセットアップします。
+
+[コマンド実行]
+npm run setup-font-project
+node scripts/setup-fonts.js elegant --display=cormorant --body=noto-serif
+```
+
+---
+
+## 🔑 キーワードと雰囲気のマッピング
+
+AIは以下のキーワードから雰囲気を判断します：
+
+- 「かわいい」「可愛い」「kawaii」 → **kawaii**
+- 「上品」「高級」「エレガント」「elegant」 → **elegant**
+- 「やさしい」「ナチュラル」「自然」「natural」 → **natural**
+- 「かっこいい」「クール」「テック」「cool」 → **cool**
+- 「シンプル」「simple」 → **simple**
+- 「ポップ」「明るい」「pop」 → **pop**
+- 「和風」「和」「日本的」「wa」 → **wa**
+
+---
+
+## ⚙️ コマンド仕様
+
+### 基本形式：
+```bash
+node scripts/setup-fonts.js [vibe] --display=[display-key] --body=[body-key]
+```
+
+### 例：
+```bash
+# かわいい系：Zen Maru Gothic + Kosugi Maru
+node scripts/setup-fonts.js kawaii --display=zen-maru --body=kosugi-maru
+
+# 上品系：Cormorant Garamond + Noto Serif JP
+node scripts/setup-fonts.js elegant --display=cormorant --body=noto-serif
+
+# オプション省略時：デフォルト（最初の選択肢）
+node scripts/setup-fonts.js kawaii
+# → zen-maru + zen-kaku
+```
+
+---
+
+## 📝 チェックリスト
+
+AIは以下を確実に実行します：
+
+1. ✅ キーワードから雰囲気を判定
+2. ✅ 見出し用フォントの選択肢を提示
+3. ✅ ユーザーの選択を受け取る
+4. ✅ 本文用フォントの選択肢を提示
+5. ✅ ユーザーの選択を受け取る
+6. ✅ setup-font-projectを実行
+7. ✅ setup-fontsを適切なオプション付きで実行
+8. ✅ 完了メッセージを表示
+
+---
+
+## 🎯 重要なポイント
+
+- **チャット内で完結**：ターミナルに行く必要なし
+- **番号で選択**：1、2、3と答えるだけ
+- **自動実行**：AIが全てのコマンドを実行
+- **後方互換性**：古い形式のコマンドも動作する
