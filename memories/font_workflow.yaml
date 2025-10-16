@@ -1,435 +1,745 @@
-# フォント自動化ワークフロー v2.0（複数選択対応）
-
-## AIアシスタントの動作フロー
-
-### ユーザーが「かわいいフォントにしたい」などと言った場合の対応手順
-
-#### **重要：チャット内で完結させる**
-
-ユーザーとの対話でフォントを選択し、コマンドを自動実行します。
-
----
-
-## 📋 実行フロー
-
-### ステップ1：プロジェクト初期設定を確認・実行
-
-```bash
-npm run setup-font-project
-```
-
-このコマンドは何度実行しても安全（冪等性あり）
-
----
-
-### ステップ2：フォント選択を提示
-
-#### ユーザーが「かわいいフォントにしたい」と言った場合：
-
-**AIの応答例：**
-
-```
-かわいいフォントですね！
-見出し用フォントを選んでください：
-
-1) Zen Maru Gothic（丸ゴシック） - やわらかい印象
-2) M PLUS Rounded 1c（丸み） - 親しみやすい
-3) Hannari（はんなり） - 日本的なやさしさ
-
-どれにしますか？（番号で答えてください）
-```
-
-**ユーザーが「1」と答えた場合：**
-
-```
-承知しました！次は本文用フォントを選んでください：
-
-1) Zen Kaku Gothic New（ゴシック） - 読みやすい
-2) Kosugi Maru（丸ゴシック） - やわらかい
-3) Kokoro（やさしい） - ほのぼの
-
-どれにしますか？（番号で答えてください）
-```
-
-**ユーザーが「2」と答えた場合：**
-
-```
-承知しました！
-見出し：Zen Maru Gothic
-本文：Kosugi Maru
-でセットアップします。
-```
-
----
-
-### ステップ3：コマンドを実行
-
-```bash
-npm run setup-font-project && node scripts/setup-fonts.js kawaii --display=zen-maru --body=kosugi-maru
-```
-
----
-
-## 🎨 各カテゴリの選択肢マッピング
-
-### kawaii（かわいい）
-
-**見出し用：**
-- 選択肢1 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
-- 選択肢2 → `mplus-rounded` → M PLUS Rounded 1c（丸み）
-- 選択肢3 → `hannari` → Hannari（はんなり）
-
-**本文用：**
-- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-- 選択肢2 → `kosugi-maru` → Kosugi Maru（丸ゴシック）
-- 選択肢3 → `kokoro` → Kokoro（やさしい）
-
-### elegant（上品・高級感）
-
-**見出し用：**
-- 選択肢1 → `cormorant` → Cormorant Garamond（セリフ体）
-- 選択肢2 → `shippori-mincho` → Shippori Mincho（明朝体）
-- 選択肢3 → `noto-serif` → Noto Serif JP（明朝体）
-
-**本文用：**
-- 選択肢1 → `noto-serif` → Noto Serif JP（明朝体）
-- 選択肢2 → `shippori-mincho-b1` → Shippori Mincho B1（明朝体）
-- 選択肢3 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-
-### natural（やさしい・ナチュラル）
-
-**見出し用：**
-- 選択肢1 → `noto-sans` → Noto Sans JP（ゴシック）
-- 選択肢2 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
-- 選択肢3 → `sawarabi-gothic` → Sawarabi Gothic（さわらび）
-
-**本文用：**
-- 選択肢1 → `zen-maru` → Zen Maru Gothic（丸ゴシック）
-- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
-
-### cool（かっこいい）
-
-**見出し用：**
-- 選択肢1 → `poppins` → Poppins（モダン）
-- 選択肢2 → `ibm-plex` → IBM Plex Sans JP（テック）
-- 選択肢3 → `montserrat` → Montserrat（スタイリッシュ）
-
-**本文用：**
-- 選択肢1 → `noto-sans` → Noto Sans JP（ゴシック）
-- 選択肢2 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-
-### simple（シンプル）
-
-**見出し用：**
-- 選択肢1 → `inter` → Inter（モダン）
-- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
-- 選択肢3 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-
-**本文用：**
-- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-- 選択肢2 → `noto-sans` → Noto Sans JP（ゴシック）
-
-### pop（ポップ）
-
-**見出し用：**
-- 選択肢1 → `zen-kaku-bold` → Zen Kaku Gothic New（太字）
-- 選択肢2 → `rocknroll` → RocknRoll One（ポップ）
-- 選択肢3 → `rampart` → Rampart One（インパクト）
-
-**本文用：**
-- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-- 選択肢2 → `mplus1p` → M PLUS 1p（読みやすい）
-
-### wa（和風）
-
-**見出し用：**
-- 選択肢1 → `shippori-mincho` → Shippori Mincho（明朝体）
-- 選択肢2 → `yuji-syuku` → Yuji Syuku（筆文字風）
-- 選択肢3 → `klee-one` → Klee One（手書き風）
-
-**本文用：**
-- 選択肢1 → `zen-kaku` → Zen Kaku Gothic New（ゴシック）
-- 選択肢2 → `shippori-mincho-b1` → Shippori Mincho B1（明朝体）
-- 選択肢3 → `noto-serif` → Noto Serif JP（明朝体）
-
----
-
-## 🤖 AIアシスタントの対応例
-
-### 例1：かわいいフォント
-
-```
-ユーザー：「かわいいフォントにしたい」
-
-AI：
-かわいいフォントですね！まず見出し用フォントを選んでください：
-
-1) Zen Maru Gothic（丸ゴシック） - やわらかい印象
-2) M PLUS Rounded 1c（丸み） - 親しみやすい  
-3) Hannari（はんなり） - 日本的なやさしさ
-
-ユーザー：「2」
-
-AI：
-次は本文用フォントを選んでください：
-
-1) Zen Kaku Gothic New（ゴシック） - 読みやすい
-2) Kosugi Maru（丸ゴシック） - やわらかい
-3) Kokoro（やさしい） - ほのぼの
-
-ユーザー：「2」
-
-AI：
-承知しました！
-見出し：M PLUS Rounded 1c
-本文：Kosugi Maru
-でセットアップします。
-
-[コマンド実行]
-npm run setup-font-project
-node scripts/setup-fonts.js kawaii --display=mplus-rounded --body=kosugi-maru
-```
-
-### 例2：上品なフォント
-
-```
-ユーザー：「上品なフォントにしたい」
-
-AI：
-上品なフォントですね！まず見出し用フォントを選んでください：
-
-1) Cormorant Garamond（セリフ体） - エレガント
-2) Shippori Mincho（明朝体） - 日本的な上品さ
-3) Noto Serif JP（明朝体） - 読みやすい明朝
-
-ユーザー：「1」
-
-AI：
-次は本文用フォントを選んでください：
-
-1) Noto Serif JP（明朝体） - 読みやすい
-2) Shippori Mincho B1（明朝体） - 上品
-3) Zen Kaku Gothic New（ゴシック） - モダン
-
-ユーザー：「1」
-
-AI：
-承知しました！
-見出し：Cormorant Garamond
-本文：Noto Serif JP
-でセットアップします。
-
-[コマンド実行]
-npm run setup-font-project
-node scripts/setup-fonts.js elegant --display=cormorant --body=noto-serif
-```
-
----
-
-## 🔑 キーワードと雰囲気のマッピング
-
-AIは以下のキーワードから雰囲気を判断します：
-
-- 「かわいい」「可愛い」「kawaii」 → **kawaii**
-- 「上品」「高級」「エレガント」「elegant」 → **elegant**
-- 「やさしい」「ナチュラル」「自然」「natural」 → **natural**
-- 「かっこいい」「クール」「テック」「cool」 → **cool**
-- 「シンプル」「simple」 → **simple**
-- 「ポップ」「明るい」「pop」 → **pop**
-- 「和風」「和」「日本的」「wa」 → **wa**
-
----
-
-## ⚙️ コマンド仕様
-
-### 基本形式：
-```bash
-node scripts/setup-fonts.js [vibe] --display=[display-key] --body=[body-key]
-```
-
-### 例：
-```bash
-# かわいい系：Zen Maru Gothic + Kosugi Maru
-node scripts/setup-fonts.js kawaii --display=zen-maru --body=kosugi-maru
-
-# 上品系：Cormorant Garamond + Noto Serif JP
-node scripts/setup-fonts.js elegant --display=cormorant --body=noto-serif
-
-# オプション省略時：デフォルト（最初の選択肢）
-node scripts/setup-fonts.js kawaii
-# → zen-maru + zen-kaku
-```
-
----
-
-## 📝 チェックリスト
-
-AIは以下を確実に実行します：
-
-1. ✅ キーワードから雰囲気を判定
-2. ✅ 見出し用フォントの選択肢を提示
-3. ✅ ユーザーの選択を受け取る
-4. ✅ 本文用フォントの選択肢を提示
-5. ✅ ユーザーの選択を受け取る
-6. ✅ setup-font-projectを実行
-7. ✅ setup-fontsを適切なオプション付きで実行
-8. ✅ 完了メッセージを表示
-
----
-
-## 🎯 重要なポイント
-
-- **チャット内で完結**：ターミナルに行く必要なし
-- **番号で選択**：1、2、3と答えるだけ
-- **自動実行**：AIが全てのコマンドを実行
-- **後方互換性**：古い形式のコマンドも動作する
-
----
-
-## 🏗️ 設計思想：テンプレートプロジェクトとしてのフォント適用
-
-### このプロジェクトは「DefaultSetting」テンプレート
-
-このプロジェクトは**クローンして使うテンプレート**として設計されています。
-
-### フォント適用の方針：アプローチ1（クラスベース）
-
-#### ✅ 採用した方針
-```typescript
-// layout.tsx に最初から font-body クラスを記述
-<body className="antialiased font-body">
-```
-
-#### なぜこのアプローチ？
-
-**テンプレートとして配布する場合のメリット：**
-
-1. **クローンした人は何も考えなくていい**
-   - `npm run setup-fonts:kawaii` を実行するだけ
-   - 自動的にフォントが全体に適用される
-
-2. **明示的で分かりやすい**
-   - HTMLを見れば「フォントクラスがある」と一目で分かる
-   - 新しい開発者がカスタマイズしやすい
-   - デバッグが簡単（DevToolsでクラスが見える）
-
-3. **Tailwindの思想に沿っている**
-   - ユーティリティファーストアプローチ
-   - グローバルスタイルを最小限に保てる
-
-4. **柔軟性が高い**
-   - 部分的な上書きが簡単
-   - 特定の要素だけ別のフォントにできる
-
-#### 比較：アプローチ2（globals.css で一括設定）を採用しない理由
-
-```css
-/* このアプローチは採用しない */
-@layer base {
-  body { font-family: var(--font-body); }
-  h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
-}
-```
-
-**デメリット：**
-- ❌ 暗黙的（HTMLを見てもフォントが適用されているか分からない）
-- ❌ グローバルな強制適用
-- ❌ Tailwindのユーティリティファーストから外れる
-
-### scripts/setup-fonts.js の自動化
-
-#### 🔄 デフォルト状態とフォント自動化の関係
-
-**デフォルト状態（クローン直後）：**
-```typescript
-// app/layout.tsx - Geistフォントが設定されている
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-```
-
-**この状態のメリット：**
-- ✅ クローン直後から正常に動作する
-- ✅ フォント自動化を使わない人も困らない
-- ✅ Next.jsのデフォルト設定として自然
-
----
-
-**フォント自動化実行後（`npm run setup-fonts:kawaii` など）：**
-
-`scripts/setup-fonts.js`の`updateLayout()`関数（289-305行目）が以下を**自動的に**実行：
-
-1. **Geistフォントのimportを削除**
-```javascript
-layoutContent = layoutContent.replace(/import\s+{\s*Geist[^}]*}\s+from\s+["']next\/font\/google["'];?\n?/g, '');
-```
-
-2. **Geistフォントの定義を削除**
-```javascript
-layoutContent = layoutContent.replace(/const\s+geist\w+\s*=\s*Geist[^}]+}\);?\s*\n?/g, '');
-```
-
-3. **classNameをfont-bodyクラスに置き換え**
-```javascript
-// className から geist 変数を削除し、font-body クラスを追加
-layoutContent = layoutContent.replace(/className=\{`\$\{geist[^}]+\}\s*antialiased`\}/g, 'className="antialiased font-body"');
-// ...
-// 既に font-body がない antialiased のみの場合も追加
-layoutContent = layoutContent.replace(/className="antialiased"(?![\s\S]*font-body)/g, 'className="antialiased font-body"');
-```
-
-4. **フォントCSSのimportを追加**
-```javascript
-layoutContent = 
-  'import "../lib/fonts/_active.css";\n' +
-  'import "../lib/fonts/_vars.css";\n' +
-  layoutContent;
-```
-
-**結果：**
-```typescript
-// app/layout.tsx - 自動変換後
-import "../lib/fonts/_active.css";
-import "../lib/fonts/_vars.css";
-import "./globals.css";
-
-<body className="antialiased font-body">
-```
-
----
-
-#### 💡 重要：手動での変更は不要
-
-開発者は何も手動で変更する必要はありません：
-1. プロジェクトをクローン → Geistフォントで動作
-2. `npm run setup-fonts:kawaii` を実行 → 自動的にフォント置換
-3. 完了！
-
-これにより：
-- ✅ デフォルト状態が壊れない
-- ✅ フォント自動化は完全自動
-- ✅ 柔軟性が保たれる
-
-### 使い方の例
-
-```tsx
-// デフォルト：font-body が自動適用される
-<p>これは本文です</p>
-
-// 見出し：font-display クラスを使用
-<h1 className="font-display text-4xl">見出しです</h1>
-
-// 特殊ケース：個別にフォントを変更
-<p className="font-display">本文だけど見出しフォントを使いたい</p>
-```
-
-### まとめ
-
-- ✅ **テンプレートプロジェクト** = クラスベースで明示的に
-- ✅ **既存プロジェクトへの導入** = globals.cssで一括設定が便利
-- ✅ このプロジェクトは前者なので、アプローチ1を採用
+# ==============================================================================
+# 🚨 CRITICAL WORKFLOW: フォント設定プロセス（絶対遵守）
+# ==============================================================================
+# 
+# ⚠️ このワークフローは MANDATORY（必須）です
+# ⚠️ このファイルに記載されたステップを省略することは禁止されています
+# ⚠️ ユーザーからフォント関連の要望があった場合、必ずこのフローに従ってください
+#
+# Priority: CRITICAL
+# Version: 3.0
+# Last Updated: 2025-10-16
+#
+# ==============================================================================
+
+metadata:
+  priority: CRITICAL
+  enforcement: MANDATORY
+  violation_action: STOP_AND_FOLLOW_WORKFLOW
+  
+# ------------------------------------------------------------------------------
+# トリガー条件（これらのキーワードが出たら必ずこのワークフローを実行）
+# ------------------------------------------------------------------------------
+
+triggers:
+  keywords:
+    - "フォント"
+    - "font"
+    - "かわいい"
+    - "可愛い"
+    - "kawaii"
+    - "上品"
+    - "高級"
+    - "エレガント"
+    - "elegant"
+    - "やさしい"
+    - "ナチュラル"
+    - "natural"
+    - "かっこいい"
+    - "クール"
+    - "cool"
+    - "シンプル"
+    - "simple"
+    - "ポップ"
+    - "pop"
+    - "和風"
+    - "和"
+    - "wa"
+    - "フォント変更"
+    - "フォント設定"
+  
+  conditions:
+    - "ユーザーがフォントの雰囲気について言及した場合"
+    - "ユーザーがフォント変更を希望した場合"
+    - "ユーザーがデザインの印象について話した場合"
+
+# ------------------------------------------------------------------------------
+# ワークフロー実行ルール
+# ------------------------------------------------------------------------------
+
+workflow_rules:
+  rule_1:
+    description: "ステップは順番に実行すること"
+    enforcement: MANDATORY
+    
+  rule_2:
+    description: "ステップ2とステップ3は絶対にスキップ禁止"
+    enforcement: CRITICAL
+    reason: "ユーザーに選択肢を提示せずに勝手に決定することは厳禁"
+    
+  rule_3:
+    description: "各ステップでユーザーの入力を待つこと"
+    enforcement: MANDATORY
+    reason: "AIが勝手に選択を進めてはいけない"
+    
+  rule_4:
+    description: "ステップを飛ばして実行することは禁止"
+    enforcement: CRITICAL
+    violation_example: "ユーザーが「上品なフォント」と言ったからといって、選択肢を提示せずにnoto-serifを自動選択して実行することは違反"
+
+# ------------------------------------------------------------------------------
+# 必須実行ステップ
+# ------------------------------------------------------------------------------
+
+workflow:
+  
+  # ============================================================================
+  # STEP 1: 雰囲気の確認
+  # ============================================================================
+  
+  step_1:
+    name: "雰囲気の確認"
+    status: MANDATORY
+    skip_allowed: false
+    
+    trigger_check:
+      - "ユーザーが明示的に雰囲気を指定した場合はスキップ可能"
+      - "例: 「elegantで」「かわいいフォント」など"
+    
+    action: |
+      ユーザーに雰囲気の選択肢を提示する
+    
+    response_template: |
+      フォント設定を行いますね！
+      どんな雰囲気のフォントをお探しですか？
+      
+      1. かわいい（kawaii）- やわらかい丸ゴシック系
+      2. 上品・高級感（elegant）- セリフ体・明朝体系
+      3. やさしい・ナチュラル（natural）- 読みやすいゴシック系
+      4. かっこいい（cool）- モダン・テック系
+      5. シンプル（simple）- ミニマル・クリーン系
+      6. ポップ（pop）- 明るい・インパクト系
+      7. 和風（wa）- 日本的・伝統的
+      
+      番号または名前で教えてください。
+    
+    user_input_mapping:
+      "1": kawaii
+      "かわいい": kawaii
+      "kawaii": kawaii
+      "2": elegant
+      "上品": elegant
+      "elegant": elegant
+      "3": natural
+      "やさしい": natural
+      "natural": natural
+      "4": cool
+      "かっこいい": cool
+      "cool": cool
+      "5": simple
+      "シンプル": simple
+      "simple": simple
+      "6": pop
+      "ポップ": pop
+      "pop": pop
+      "7": wa
+      "和風": wa
+      "wa": wa
+    
+    next_step: "step_2"
+  
+  # ============================================================================
+  # STEP 2: 見出しフォントの選択（🚨 CRITICAL - 絶対スキップ禁止）
+  # ============================================================================
+  
+  step_2:
+    name: "見出しフォントの選択肢提示"
+    status: CRITICAL
+    skip_allowed: false
+    skip_prohibition: "このステップをスキップすることは絶対に禁止されています"
+    
+    action: |
+      選択された雰囲気に応じて、見出しフォントの選択肢を提示する
+      ⚠️ ユーザーの選択を待つこと（勝手に選んではいけない）
+    
+    violation_warning: |
+      ❌ 違反例: ユーザーが「上品なフォント」と言ったからといって、
+      選択肢を提示せずに noto-serif を勝手に選択して実行することは禁止
+    
+    options_by_vibe:
+      
+      kawaii:
+        prompt: |
+          かわいいフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. zen-maru: Zen Maru Gothic（丸ゴシック）- やわらかい印象
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- 読みやすい
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": zen-maru
+          "zen-maru": zen-maru
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+      
+      elegant:
+        prompt: |
+          上品なフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. cormorant: Cormorant Garamond（セリフ体）- エレガント
+          2. noto-serif: Noto Serif JP（明朝体）- 日本的な上品さ
+          3. noto-sans: Noto Sans JP（ゴシック）- モダンな上品さ
+          4. cardo: Cardo（クラシック）- 伝統的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": cormorant
+          "cormorant": cormorant
+          "2": noto-serif
+          "noto-serif": noto-serif
+          "3": noto-sans
+          "noto-sans": noto-sans
+          "4": cardo
+          "cardo": cardo
+      
+      natural:
+        prompt: |
+          やさしいフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. noto-sans: Noto Sans JP（ゴシック）- 読みやすい
+          2. zen-maru: Zen Maru Gothic（丸ゴシック）- やわらかい
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": noto-sans
+          "noto-sans": noto-sans
+          "2": zen-maru
+          "zen-maru": zen-maru
+      
+      cool:
+        prompt: |
+          かっこいいフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. poppins: Poppins（モダン）- スタイリッシュ
+          2. noto-sans: Noto Sans JP（ゴシック）- シャープ
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": poppins
+          "poppins": poppins
+          "2": noto-sans
+          "noto-sans": noto-sans
+      
+      simple:
+        prompt: |
+          シンプルなフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. inter: Inter（モダン）- ミニマル
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- すっきり
+          3. noto-sans: Noto Sans JP（ゴシック）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": inter
+          "inter": inter
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+          "3": noto-sans
+          "noto-sans": noto-sans
+      
+      pop:
+        prompt: |
+          ポップなフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. zen-kaku: Zen Kaku Gothic New（ゴシック）- 明るい
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": zen-kaku
+          "zen-kaku": zen-kaku
+      
+      wa:
+        prompt: |
+          和風のフォントですね！
+          まず、見出し用フォントを選んでください：
+          
+          1. shippori-mincho: Shippori Mincho（明朝体）- 伝統的
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- モダンな和
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": shippori-mincho
+          "shippori-mincho": shippori-mincho
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+    
+    wait_for_user_input: true
+    next_step: "step_3"
+  
+  # ============================================================================
+  # STEP 3: 本文フォントの選択（🚨 CRITICAL - 絶対スキップ禁止）
+  # ============================================================================
+  
+  step_3:
+    name: "本文フォントの選択肢提示"
+    status: CRITICAL
+    skip_allowed: false
+    skip_prohibition: "このステップをスキップすることは絶対に禁止されています"
+    
+    action: |
+      見出しフォント選択後、本文フォントの選択肢を提示する
+      ⚠️ ユーザーの選択を待つこと（勝手に選んではいけない）
+    
+    violation_warning: |
+      ❌ 違反例: 見出しと同じフォントを自動的に本文にも適用することは禁止
+      必ずユーザーに選択肢を提示すること
+    
+    options_by_vibe:
+      
+      kawaii:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. zen-maru: Zen Maru Gothic（丸ゴシック）- やわらかい
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- 読みやすい
+          3. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": zen-maru
+          "zen-maru": zen-maru
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+          "3": noto-sans
+          "noto-sans": noto-sans
+      
+      elegant:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. cormorant: Cormorant Garamond（セリフ体）- エレガント
+          2. noto-serif: Noto Serif JP（明朝体）- 読みやすい明朝
+          3. noto-sans-body: Noto Sans JP（ゴシック）- モダン
+          4. cardo: Cardo（クラシック）- 伝統的
+          5. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": cormorant
+          "cormorant": cormorant
+          "2": noto-serif
+          "noto-serif": noto-serif
+          "3": noto-sans-body
+          "noto-sans-body": noto-sans-body
+          "4": cardo
+          "cardo": cardo
+          "5": noto-sans
+          "noto-sans": noto-sans
+      
+      natural:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. noto-sans-var: Noto Sans JP（ゴシック）- 読みやすい
+          2. zen-maru: Zen Maru Gothic（丸ゴシック）- やわらかい
+          3. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": noto-sans-var
+          "noto-sans-var": noto-sans-var
+          "2": zen-maru
+          "zen-maru": zen-maru
+          "3": noto-sans
+          "noto-sans": noto-sans
+      
+      cool:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. poppins: Poppins（モダン）- スタイリッシュ
+          2. noto-sans-body: Noto Sans JP（ゴシック）- 読みやすい
+          3. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": poppins
+          "poppins": poppins
+          "2": noto-sans-body
+          "noto-sans-body": noto-sans-body
+          "3": noto-sans
+          "noto-sans": noto-sans
+      
+      simple:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. inter: Inter（モダン）- ミニマル
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- すっきり
+          3. noto-sans-body: Noto Sans JP（ゴシック）- 読みやすい
+          4. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": inter
+          "inter": inter
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+          "3": noto-sans-body
+          "noto-sans-body": noto-sans-body
+          "4": noto-sans
+          "noto-sans": noto-sans
+      
+      pop:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. zen-kaku: Zen Kaku Gothic New（ゴシック）- 読みやすい
+          2. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": zen-kaku
+          "zen-kaku": zen-kaku
+          "2": noto-sans
+          "noto-sans": noto-sans
+      
+      wa:
+        prompt: |
+          承知しました！次は本文用フォントを選んでください：
+          
+          1. shippori-mincho: Shippori Mincho（明朝体）- 伝統的
+          2. zen-kaku: Zen Kaku Gothic New（ゴシック）- モダンな和
+          3. noto-sans: Noto Sans JP（デフォルト）- 標準的
+          
+          どれにしますか？（番号またはキーで答えてください）
+        
+        choices:
+          "1": shippori-mincho
+          "shippori-mincho": shippori-mincho
+          "2": zen-kaku
+          "zen-kaku": zen-kaku
+          "3": noto-sans
+          "noto-sans": noto-sans
+    
+    wait_for_user_input: true
+    next_step: "step_4"
+  
+  # ============================================================================
+  # STEP 4: 確認と実行
+  # ============================================================================
+  
+  step_4:
+    name: "設定確認と実行"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      選択内容をユーザーに確認し、コマンドを実行する
+    
+    response_template: |
+      承知しました！以下の設定でフォントをセットアップします：
+      
+      - 雰囲気: {vibe_name}（{vibe_key}）
+      - 見出しフォント: {display_font_name}
+      - 本文フォント: {body_font_name}
+      
+      実行します...
+    
+    command_template: |
+      node scripts/setup-fonts.js {vibe} --display={display_key} --body={body_key}
+    
+    command_example: |
+      node scripts/setup-fonts.js elegant --display=noto-serif --body=noto-serif
+    
+    next_step: "step_5"
+  
+  # ============================================================================
+  # STEP 5: 完了報告
+  # ============================================================================
+  
+  step_5:
+    name: "完了報告と次のステップ案内"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      実行結果を報告し、次のステップを案内する
+    
+    response_template: |
+      ✅ フォント設定が完了しました！
+      
+      設定内容:
+      - 見出し: {display_font_name}
+      - 本文: {body_font_name}
+      
+      次のステップ:
+      1. npm run dev でサーバーを起動（既に起動している場合はリロード）
+      2. ブラウザで http://localhost:3000 を開いて確認
+      
+      フォントが気に入らない場合は、いつでも別のフォントに変更できます。
+      「フォント変更」と言っていただければ、再度選択できます。
+
+# ==============================================================================
+# フォント設定マッピング（参照用）
+# ==============================================================================
+
+font_mapping:
+  kawaii:
+    display:
+      zen-maru:
+        name: "Zen Maru Gothic（丸ゴシック）"
+        family: "Zen Maru Gothic"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+    body:
+      zen-maru:
+        name: "Zen Maru Gothic（丸ゴシック）"
+        family: "Zen Maru Gothic"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  elegant:
+    display:
+      cormorant:
+        name: "Cormorant Garamond（セリフ体）"
+        family: "Cormorant Garamond"
+      noto-serif:
+        name: "Noto Serif JP（明朝体）"
+        family: "Noto Serif JP"
+      noto-sans:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      cardo:
+        name: "Cardo（クラシック）"
+        family: "Cardo"
+    body:
+      cormorant:
+        name: "Cormorant Garamond（セリフ体）"
+        family: "Cormorant Garamond"
+      noto-serif:
+        name: "Noto Serif JP（明朝体）"
+        family: "Noto Serif JP"
+      noto-sans-body:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      cardo:
+        name: "Cardo（クラシック）"
+        family: "Cardo"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  natural:
+    display:
+      noto-sans:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      zen-maru:
+        name: "Zen Maru Gothic（丸ゴシック）"
+        family: "Zen Maru Gothic"
+    body:
+      noto-sans-var:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      zen-maru:
+        name: "Zen Maru Gothic（丸ゴシック）"
+        family: "Zen Maru Gothic"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  cool:
+    display:
+      poppins:
+        name: "Poppins（モダン）"
+        family: "Poppins"
+      noto-sans:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+    body:
+      poppins:
+        name: "Poppins（モダン）"
+        family: "Poppins"
+      noto-sans-body:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  simple:
+    display:
+      inter:
+        name: "Inter（モダン）"
+        family: "Inter"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+      noto-sans:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+    body:
+      inter:
+        name: "Inter（モダン）"
+        family: "Inter"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+      noto-sans-body:
+        name: "Noto Sans JP（ゴシック）"
+        family: "Noto Sans JP"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  pop:
+    display:
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+    body:
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+  
+  wa:
+    display:
+      shippori-mincho:
+        name: "Shippori Mincho（明朝体）"
+        family: "Shippori Mincho"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+    body:
+      shippori-mincho:
+        name: "Shippori Mincho（明朝体）"
+        family: "Shippori Mincho"
+      zen-kaku:
+        name: "Zen Kaku Gothic New（ゴシック）"
+        family: "Zen Kaku Gothic New"
+      noto-sans:
+        name: "Noto Sans JP（デフォルト）"
+        family: "Noto Sans JP"
+
+# ==============================================================================
+# 使用例
+# ==============================================================================
+
+usage_examples:
+  
+  example_1:
+    user_input: "上品なフォントにしたい"
+    expected_flow:
+      - step: 1
+        action: "雰囲気を確認（この場合、ユーザーが「上品」と言っているのでelegantと判断）"
+      - step: 2
+        action: "見出しフォントの選択肢を提示（cormorant, noto-serif, noto-sans, cardo）"
+        wait: true
+      - step: 3
+        action: "本文フォントの選択肢を提示（ユーザーが選択した後）"
+        wait: true
+      - step: 4
+        action: "確認して実行"
+      - step: 5
+        action: "完了報告"
+  
+  example_2:
+    user_input: "かわいいフォントで、見出しはzen-maru、本文はnoto-sansにして"
+    expected_flow:
+      - step: 1
+        action: "スキップ（雰囲気が明示されている: kawaii）"
+      - step: 2
+        action: "スキップ（見出しフォントが明示されている: zen-maru）"
+      - step: 3
+        action: "スキップ（本文フォントが明示されている: noto-sans）"
+      - step: 4
+        action: "確認して実行"
+      - step: 5
+        action: "完了報告"
+  
+  violation_example:
+    user_input: "上品なフォントにしたい"
+    wrong_action: |
+      ❌ 間違った対応:
+      「上品なフォントとして Noto Serif JP をセットアップします」
+      → 選択肢を提示せずに勝手に決定している（違反）
+    
+    correct_action: |
+      ✅ 正しい対応:
+      「上品なフォントですね！
+      まず、見出し用フォントを選んでください：
+      1. cormorant: Cormorant Garamond（セリフ体）- エレガント
+      2. noto-serif: Noto Serif JP（明朝体）- 日本的な上品さ
+      ...」
+      → ユーザーに選択肢を提示して選んでもらう（正解）
+
+# ==============================================================================
+# トラブルシューティング
+# ==============================================================================
+
+troubleshooting:
+  
+  issue_1:
+    problem: "AIがステップ2をスキップして勝手にフォントを選択する"
+    solution: |
+      - step_2.skip_allowed が false であることを確認
+      - step_2.status が CRITICAL であることを強調
+      - violation_warning を読んで、違反例を理解する
+  
+  issue_2:
+    problem: "ユーザーが具体的なフォント名を指定した場合の対応"
+    solution: |
+      - ユーザーが「zen-maruで」と言った場合、それが有効な選択肢かチェック
+      - 有効なら確認の上で実行、無効なら選択肢を提示
+  
+  issue_3:
+    problem: "このワークフローが発動しない"
+    solution: |
+      - triggers.keywords を確認
+      - ユーザーの入力にトリガーキーワードが含まれているか確認
+      - 含まれていれば必ずこのワークフローを実行すること
+
+# ==============================================================================
+# バージョン履歴
+# ==============================================================================
+
+changelog:
+  v3.0:
+    date: "2025-10-16"
+    changes:
+      - "CRITICAL/MANDATORY の明示的な宣言を追加"
+      - "トリガー条件を構造化"
+      - "ワークフロールールを明確化"
+      - "違反例と正しい例を追加"
+      - "各ステップのskip_allowedフラグを明示"
+      - "メタデータセクションを追加"
+      - "完全に構造化されたYAML形式に移行"
+  
+  v2.0:
+    date: "2024-XX-XX"
+    changes:
+      - "複数選択肢対応"
+      - "見出しと本文を個別に選択可能に"
+  
+  v1.0:
+    date: "2024-XX-XX"
+    changes:
+      - "初版リリース"

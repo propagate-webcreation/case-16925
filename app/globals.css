@@ -3,9 +3,9 @@
 
 /* カスタムフォントユーティリティクラス */
 @utility font-display {
-  font-family: var(--font-display);
+  font-family: var(--font-display, var(--font-geist-sans), sans-serif);
 }
 
 @utility font-body {
-  font-family: var(--font-body);
+  font-family: var(--font-body, var(--font-geist-sans), sans-serif);
 }
