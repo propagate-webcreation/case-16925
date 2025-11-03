@@ -1,0 +1,631 @@
+# ==============================================================================
+# 🚨 CRITICAL WORKFLOW: ドメイン接続プロセス（絶対遵守）
+# ==============================================================================
+# 
+# ⚠️ このワークフローは MANDATORY（必須）です
+# ⚠️ このファイルに記載された設定とプロンプトに厳密に従ってください
+# ⚠️ YAML外のことは実行・追加・推測しないこと
+#
+# Priority: CRITICAL
+# Version: 1.0
+# Last Updated: 2025-11-03
+#
+# ==============================================================================
+
+metadata:
+  priority: CRITICAL
+  enforcement: MANDATORY
+  violation_action: STOP_AND_FOLLOW_YAML
+  
+# ------------------------------------------------------------------------------
+# トリガー条件（これらのキーワードが出たら必ずこのワークフローを実行）
+# ------------------------------------------------------------------------------
+
+triggers:
+  
+  # メインキーワード（必須）
+  # 注意: 雑談での誤発火を防ぐため、「ドメイン接続」のみに絞っています
+  main_keywords:
+    - "ドメイン接続"
+  
+  # 生成系キーワード（必須）
+  # 注意: 「して」「お願い」など汎用的な語は誤発火を防ぐため除外
+  action_keywords:
+    - "作成して"
+    - "生成して"
+    - "出力して"
+    - "書いて"
+    - "作って"
+    - "create"
+    - "generate"
+    - "write"
+    - "make"
+  
+  # 除外キーワード（これが含まれる場合は実行しない）
+  exclude_keywords:
+    - "確認"
+    - "必要ですか"
+    - "ありますか"
+    - "でしょうか"
+    - "してますか"
+    - "チェック"
+    - "できていますか"
+    - "どう"
+    - "方法"
+    - "教えて"
+    - "説明"
+    - "explain"
+    - "how"
+    - "what"
+    - "why"
+    - "review"
+    - "？"
+    - "?"
+  
+  # トリガー条件（すべて満たす必要がある）
+  conditions:
+    description: |
+      以下の条件をすべて満たす場合のみワークフローを実行：
+      1. main_keywords のいずれかが含まれる
+      2. action_keywords のいずれかが含まれる
+      3. exclude_keywords のいずれも含まれない
+    
+    all_required:
+      - "triggers.main_keywords のいずれかが含まれる"
+      - "triggers.action_keywords のいずれかが含まれる"
+    
+    none_allowed:
+      - "triggers.exclude_keywords のいずれかが含まれる"
+  
+  # トリガー例
+  examples:
+    trigger_ok:
+      - "ドメイン接続のvercel.jsonを作成して"
+      - "ドメイン接続の設定を生成して"
+      - "ドメイン接続を作って"
+      - "ドメイン接続のJSONを出力して"
+    
+    trigger_ng:
+      - "ドメイン接続の方法は？"          # exclude: "方法"、"？"
+      - "ドメイン接続は必要ですか？"      # exclude: "必要ですか"、"？"
+      - "ドメイン接続について教えて"      # exclude: "教えて"
+      - "ドメイン接続について説明して"    # exclude: "説明"
+      - "ドメイン接続をどうして"          # exclude: "どう"
+      - "ドメイン接続をお願い"            # action: "お願い"は除外（汎用的すぎる）
+      - "vercel.jsonを作成して"          # main_keywords なし
+      - "リダイレクト設定を作成して"      # main_keywords なし
+
+# ------------------------------------------------------------------------------
+# 案件設定（ここだけ差し替え）
+# ------------------------------------------------------------------------------
+
+domain_config:
+  APEX_DOMAIN: "example.jp"           # wwwなし（購入ドメイン）
+  WWW_DOMAIN: "www.example.jp"        # wwwあり（正規側）
+  ALLOW_PREVIEW_HOSTS:                # 影響を与えないホスト（必要に応じて追記）
+    - "*.vercel.app"
+  
+  # 案件ごとに変更する場合の手順：
+  # 1. APEX_DOMAIN を購入したドメインに変更（例: "example.com"）
+  # 2. WWW_DOMAIN を正規URLに変更（例: "www.example.com"）
+  # 3. wwwなしを正規とする場合は、APEX_DOMAINとWWW_DOMAINを入れ替える
+
+# ------------------------------------------------------------------------------
+# 出力テンプレート（ここから下は原則いじらない）
+# ------------------------------------------------------------------------------
+
+# 🚨 重要: AIは以下のテンプレートのいずれかを選択し、プレースホルダーを置換して出力する
+# 説明文・コードブロック（```）は絶対に出力しない
+
+output_templates:
+  
+  # パターンA: URL直指定版（シンプル）
+  pattern_A: |
+    {
+      "redirects": [
+        { "source": "http://{APEX_DOMAIN}/:path*", "destination": "https://{WWW_DOMAIN}/:path*", "permanent": true },
+        { "source": "https://{APEX_DOMAIN}/:path*", "destination": "https://{WWW_DOMAIN}/:path*", "permanent": true },
+        { "source": "http://{WWW_DOMAIN}/:path*", "destination": "https://{WWW_DOMAIN}/:path*", "permanent": true }
+      ]
+    }
+  
+  # パターンB: host条件版（推奨・*.vercel.appに影響しない）
+  pattern_B: |
+    {
+      "redirects": [
+        {
+          "source": "/:path*",
+          "has": [{ "type": "host", "value": "{APEX_DOMAIN}" }],
+          "destination": "https://{WWW_DOMAIN}/:path*",
+          "permanent": true
+        },
+        {
+          "source": "/:path*",
+          "has": [{ "type": "host", "value": "{WWW_DOMAIN}" }],
+          "destination": "https://{WWW_DOMAIN}/:path*",
+          "permanent": true
+        }
+      ]
+    }
+
+# ------------------------------------------------------------------------------
+# 出力ルール（🚨 CRITICAL - 絶対遵守）
+# ------------------------------------------------------------------------------
+
+output_rules:
+  
+  rule_1:
+    name: "テンプレート選択"
+    description: "output_templates.pattern_A または pattern_B のいずれかを選択"
+    recommendation: "pattern_B（host条件版）を推奨"
+  
+  rule_2:
+    name: "プレースホルダー置換"
+    description: |
+      以下のプレースホルダーを実際の値に置換する：
+      - {APEX_DOMAIN} → domain_config.APEX_DOMAIN の値
+      - {WWW_DOMAIN} → domain_config.WWW_DOMAIN の値
+    example: |
+      {APEX_DOMAIN} = "example.jp" の場合
+      "http://{APEX_DOMAIN}/:path*" → "http://example.jp/:path*"
+  
+  rule_3:
+    name: "出力フォーマット（2段出力）"
+    enforcement: CRITICAL
+    format: |
+      必ず以下の2段階で出力する：
+      
+      1段目: JSON（コードブロックなし）
+      2段目: 完了報告（改行を挟んで）
+    
+    rules:
+      - "🚨 コードブロック（```）は絶対に使用しない"
+      - "🚨 JSONの前に説明文を追加しない"
+      - "✅ JSON → 改行 → 完了報告 の順で出力"
+      - "✅ JSONと完了報告の間に空行を1つ入れる"
+    
+    violation_examples:
+      - "❌ ```json { ... } ``` を使用"
+      - "❌ 「以下のようなvercel.jsonを作成します」+ JSON"
+      - "❌ JSON単体のみ（完了報告なし）"
+      - "❌ 完了報告 → JSON の順序"
+    
+    correct_example: |
+      ✅ 正しい2段出力：
+      
+      {
+        "redirects": [
+          { "source": "http://example.jp/:path*", "destination": "https://www.example.jp/:path*", "permanent": true }
+        ]
+      }
+      
+      ✅ vercel.json の内容を出力しました！
+      
+      📋 次のステップ:
+      1. 上記のJSONを vercel.json ファイルに保存
+      ...
+  
+  rule_4:
+    name: "バリデーション"
+    enforcement: CRITICAL
+    checks:
+      - "APEX_DOMAIN と WWW_DOMAIN が空でないこと"
+      - "すべてのリダイレクトが https://{WWW_DOMAIN} に向いていること"
+      - "JSON構文エラーがないこと"
+      - "redirects 配列が存在すること"
+      - "🚨 JSONルートには redirects キーのみ含める（headers, rewrites, env などは含めない）"
+      - "🚨 重複する source を持つリダイレクトを含めない"
+    
+    validation_details:
+      root_keys:
+        allowed: ["redirects"]
+        forbidden: ["headers", "rewrites", "env", "cleanUrls", "trailingSlash", "framework"]
+        reason: "今回の目的はリダイレクトのみ。他のキーは不要で混乱を招く"
+      
+      duplicate_sources:
+        check: "各 redirects[].source が一意であること"
+        reason: "重複は冗長で、意図しない動作の原因になる"
+  
+  rule_5:
+    name: "no-opチェック（オプショナル）"
+    description: |
+      既存の vercel.json が読み取り可能な場合のみ、以下を実施：
+      - 既存ファイルと生成内容を比較
+      - 同一内容の場合：「既存の vercel.json と同一内容のため、変更は不要です。」と出力
+      - 異なる場合：通常の2段出力
+      
+      既存ファイルが読み取れない場合：
+      - 比較をスキップし、通常の2段出力を実施
+    
+    note: |
+      no-opチェックは必須ではありません。
+      ファイルを読めない環境では、常に通常出力して問題ありません。
+
+# ------------------------------------------------------------------------------
+# ワークフロー実行ルール
+# ------------------------------------------------------------------------------
+
+workflow_rules:
+  rule_1:
+    description: "YAMLファイルの設定に厳密に従うこと"
+    enforcement: MANDATORY
+    
+  rule_2:
+    description: "YAML外のことは実行・追加・推測しない"
+    enforcement: CRITICAL
+    reason: "設定ミスや予期しない動作を防ぐため"
+    
+  rule_3:
+    description: "説明文・コードブロック（```）は出力禁止"
+    enforcement: MANDATORY
+    reason: "vercel.json は純粋なJSON形式である必要がある"
+    
+  rule_4:
+    description: "既存 vercel.json との比較（no-op）はオプショナル"
+    enforcement: OPTIONAL
+    reason: |
+      ファイルの読み取りが可能な場合のみ、既存ファイルと比較して
+      同一内容なら「変更不要」と通知。
+      読み取りできない場合は、常に2段出力を実施。
+    note: "AIがファイルを読めない環境では、no-opチェックをスキップして問題ありません"
+
+# ------------------------------------------------------------------------------
+# 必須実行ステップ
+# ------------------------------------------------------------------------------
+
+workflow:
+  
+  # ============================================================================
+  # STEP 1: トリガー条件の確認
+  # ============================================================================
+  
+  step_1:
+    name: "トリガー条件の確認"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      ユーザーメッセージがトリガー条件を満たすか確認する
+    
+    check_conditions:
+      all_required:
+        - "triggers.main_keywords のいずれかが含まれる（「ドメイン接続」）"
+        - "triggers.action_keywords のいずれかが含まれる（「作成して」など）"
+      
+      none_allowed:
+        - "triggers.exclude_keywords のいずれかが含まれる（「方法」「教えて」など）"
+    
+    trigger_examples:
+      ok:
+        - "✅ ドメイン接続のvercel.jsonを作成して"
+        - "✅ ドメイン接続の設定を生成して"
+        - "✅ ドメイン接続を作って"
+      
+      ng:
+        - "❌ ドメイン接続の方法は？ → exclude: 方法、？"
+        - "❌ ドメイン接続は必要ですか？ → exclude: 必要ですか、？"
+        - "❌ ドメイン接続について教えて → exclude: 教えて"
+        - "❌ ドメイン接続について説明して → exclude: 説明"
+        - "❌ ドメイン接続をどうして → exclude: どう"
+        - "❌ ドメイン接続をお願い → action: お願い（汎用的すぎて除外）"
+        - "❌ vercel.jsonを作成して → main_keywords なし"
+    
+    if_not_met: |
+      条件を満たさない場合は、このワークフローを実行せず、
+      通常の対応を行う（質問への回答など）
+    
+    next_step: "step_2"
+  
+  # ============================================================================
+  # STEP 2: テンプレート選択とプレースホルダー置換
+  # ============================================================================
+  
+  step_2:
+    name: "テンプレート選択とプレースホルダー置換"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      1. output_templates.pattern_B（推奨）または pattern_A を選択
+      2. プレースホルダーを実際の値に置換
+    
+    placeholders:
+      "{APEX_DOMAIN}": "domain_config.APEX_DOMAIN の値（例: example.jp）"
+      "{WWW_DOMAIN}": "domain_config.WWW_DOMAIN の値（例: www.example.jp）"
+    
+    validation:
+      - "APEX_DOMAIN と WWW_DOMAIN が空でないこと"
+      - "すべてのプレースホルダーが置換されていること"
+    
+    next_step: "step_3"
+  
+  # ============================================================================
+  # STEP 3: 出力
+  # ============================================================================
+  
+  step_3:
+    name: "JSON出力（1段目）"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      output_templates から選択したテンプレートを、
+      プレースホルダーを置換してJSON形式で出力する
+    
+    critical_rules:
+      - "🚨 コードブロック（```）は絶対に使用しない"
+      - "🚨 JSONの前に説明文を追加しない"
+      - "🚨 まずJSONのみを出力（完了報告は次のstep_4で）"
+    
+    output_format: |
+      正しい出力（1段目のJSONのみ）：
+      
+      {
+        "redirects": [
+          {
+            "source": "/:path*",
+            "has": [{ "type": "host", "value": "example.jp" }],
+            "destination": "https://www.example.jp/:path*",
+            "permanent": true
+          },
+          {
+            "source": "/:path*",
+            "has": [{ "type": "host", "value": "www.example.jp" }],
+            "destination": "https://www.example.jp/:path*",
+            "permanent": true
+          }
+        ]
+      }
+    
+    note: |
+      この時点では完了報告は出力しない。
+      JSONのみを出力し、次のstep_4で完了報告を続ける。
+    
+    next_step: "step_4"
+  
+  # ============================================================================
+  # STEP 4: 完了報告（2段目）
+  # ============================================================================
+  
+  step_4:
+    name: "完了報告（2段目）"
+    status: MANDATORY
+    skip_allowed: false
+    
+    action: |
+      step_3でJSONを出力した後、改行を挟んで完了報告を出力する
+    
+    format: |
+      [step_3のJSON出力]
+      
+      [空行]
+      
+      [この完了報告]
+    
+    response_template: |
+      ✅ vercel.json の内容を出力しました！
+      
+      📋 次のステップ:
+      1. 上記のJSONを vercel.json ファイルに保存
+      2. Vercel にデプロイ（git push または vercel deploy）
+      3. Vercel のダッシュボードでカスタムドメインを登録
+      4. DNS設定（Aレコード/CNAMEレコード）
+      5. https://{APEX_DOMAIN} と https://{WWW_DOMAIN} でアクセス確認
+      
+      💡 リダイレクト設定:
+      - http://{APEX_DOMAIN} → https://{WWW_DOMAIN}
+      - https://{APEX_DOMAIN} → https://{WWW_DOMAIN}
+      - http://{WWW_DOMAIN} → https://{WWW_DOMAIN}
+      - *.vercel.app は影響を受けません
+    
+    note: |
+      必ずstep_3のJSON出力の後に続けて出力すること。
+      JSONと完了報告の間には空行を1つ入れる。
+
+# ==============================================================================
+# 使用例
+# ==============================================================================
+
+usage_examples:
+  
+  example_1:
+    user_input: "ドメイン接続のvercel.jsonを作成して"
+    domain_config:
+      APEX_DOMAIN: "example.jp"
+      WWW_DOMAIN: "www.example.jp"
+    
+    expected_output: |
+      {
+        "redirects": [
+          {
+            "source": "/:path*",
+            "has": [{ "type": "host", "value": "example.jp" }],
+            "destination": "https://www.example.jp/:path*",
+            "permanent": true
+          },
+          {
+            "source": "/:path*",
+            "has": [{ "type": "host", "value": "www.example.jp" }],
+            "destination": "https://www.example.jp/:path*",
+            "permanent": true
+          }
+        ]
+      }
+      
+      ✅ vercel.json の内容を出力しました！
+      
+      📋 次のステップ:
+      1. 上記のJSONを vercel.json ファイルに保存
+      2. Vercel にデプロイ...
+    
+    notes: |
+      - JSONが先に出力される
+      - その後、完了報告が続く
+      - コードブロック（```）は使用しない
+  
+  example_2:
+    user_input: "ドメイン接続は必要ですか？"
+    expected_behavior: |
+      ワークフローを実行せず、質問に回答する
+      （exclude_keyword「必要ですか」が含まれるため）
+  
+  violation_examples:
+    
+    violation_1:
+      wrong_output: |
+        以下のようなvercel.jsonを作成します...
+        ```json
+        {
+          "redirects": [...]
+        }
+        ```
+      problem: "コードブロック（```）を使用している"
+      severity: "CRITICAL"
+    
+    violation_2:
+      wrong_output: |
+        vercel.jsonの内容は以下の通りです：
+        { "redirects": [...] }
+      problem: "JSONの前に説明文を追加している"
+      severity: "CRITICAL"
+    
+    violation_3:
+      wrong_output: |
+        { "redirects": [...] }
+      problem: "JSON単体のみ（完了報告がない）"
+      severity: "HIGH"
+    
+    violation_4:
+      wrong_output: |
+        ✅ vercel.json の内容を出力しました！
+        
+        { "redirects": [...] }
+      problem: "完了報告 → JSON の順序（逆）"
+      severity: "CRITICAL"
+    
+    violation_5:
+      wrong_output: |
+        {
+          "redirects": [...],
+          "headers": [],
+          "rewrites": []
+        }
+      problem: "redirects 以外のキー（headers, rewrites）を含んでいる"
+      severity: "CRITICAL"
+      note: "JSONルートには redirects のみを含めること"
+    
+    violation_6:
+      wrong_output: |
+        {
+          "redirects": [
+            { "source": "http://example.jp/:path*", ... },
+            { "source": "http://example.jp/:path*", ... }
+          ]
+        }
+      problem: "重複する source を持つリダイレクトが存在する"
+      severity: "HIGH"
+      note: "各 source は一意であること"
+    
+    correct_output: |
+      ✅ 正しい2段出力：
+      
+      {
+        "redirects": [...]
+      }
+      
+      ✅ vercel.json の内容を出力しました！
+      
+      📋 次のステップ:
+      1. 上記のJSONを vercel.json ファイルに保存
+      ...
+      
+      ※ 重要: JSON（1段目）→ 空行 → 完了報告（2段目）の順序
+
+# ==============================================================================
+# トラブルシューティング
+# ==============================================================================
+
+troubleshooting:
+  
+  issue_1:
+    problem: "vercel.json が生成されない"
+    solution: |
+      - domain_config.APEX_DOMAIN と domain_config.WWW_DOMAIN が正しく設定されているか確認
+      - トリガー条件（action_keywords）が含まれているか確認
+  
+  issue_2:
+    problem: "*.vercel.app もリダイレクトされてしまう"
+    solution: |
+      - "has": [{"type":"host","value":"..."}] 形式を使用する（推奨）
+      - または source に完全なURL（プロトコル＋ホスト）を指定する
+  
+  issue_3:
+    problem: "リダイレクトループが発生する"
+    solution: |
+      - https://{WWW_DOMAIN} へのリダイレクトは作成しない
+      - http://{WWW_DOMAIN} → https://{WWW_DOMAIN} のみ作成する
+  
+  issue_4:
+    problem: "既存の vercel.json が上書きされる懸念がある"
+    solution: |
+      - 既存ファイルの読み取りが可能な場合は、rule_5 の no-opチェックを実施
+      - ファイルが読めない場合は、通常の2段出力を実施（ユーザーが手動で確認）
+      - no-opチェックはオプショナルなので、実行できなくても問題ありません
+    
+    note: |
+      AIがファイルを読めない環境では、常に出力される仕様です。
+      ユーザーが既存ファイルと比較して、必要に応じて適用してください。
+  
+  issue_5:
+    problem: "生成されたJSONに headers や rewrites などの余計なキーが含まれている"
+    solution: |
+      - rule_4 のバリデーションを確認
+      - JSONルートには redirects キーのみを含めること
+      - headers, rewrites, env などは削除する
+    
+    allowed_keys: ["redirects"]
+    forbidden_keys: ["headers", "rewrites", "env", "cleanUrls", "trailingSlash", "framework"]
+    
+    note: |
+      今回の目的はリダイレクトのみです。
+      他のキーは不要で、混乱や意図しない動作の原因になります。
+  
+  issue_6:
+    problem: "同じ source を持つリダイレクトが重複している"
+    solution: |
+      - 各 redirects[].source が一意であることを確認
+      - 重複する source を持つリダイレクトを削除
+    
+    example_of_duplication: |
+      ❌ 重複あり:
+      {
+        "redirects": [
+          { "source": "http://example.jp/:path*", ... },
+          { "source": "http://example.jp/:path*", ... }  // ← 重複
+        ]
+      }
+      
+      ✅ 重複なし:
+      {
+        "redirects": [
+          { "source": "http://example.jp/:path*", ... },
+          { "source": "https://example.jp/:path*", ... }  // ← 異なるsource
+        ]
+      }
+    
+    note: |
+      重複は冗長で、JSONのサイズが大きくなるだけです。
+      Vercelは最初にマッチしたリダイレクトを使用します。
+
+# ==============================================================================
+# バージョン履歴
+# ==============================================================================
+
+changelog:
+  v1.0:
+    date: "2025-11-03"
+    changes:
+      - "初版リリース"
+      - "フォントワークフローと同じパターンで実装"
+      - "トリガー条件、ワークフロー、トラブルシューティングを定義"
+
