@@ -7,8 +7,8 @@
 # ⚠️ YAML外のことは実行・追加・推測しないこと
 #
 # Priority: CRITICAL
-# Version: 1.0
-# Last Updated: 2025-11-03
+# Version: 1.2
+# Last Updated: 2025-11-04
 #
 # ==============================================================================
 
@@ -16,6 +16,7 @@ metadata:
   priority: CRITICAL
   enforcement: MANDATORY
   violation_action: STOP_AND_FOLLOW_YAML
+  version: "1.2"
   
 # ------------------------------------------------------------------------------
 # トリガー条件（これらのキーワードが出たら必ずこのワークフローを実行）
@@ -466,26 +467,39 @@ workflow:
     next_step: "step_3"
   
   # ============================================================================
-  # STEP 3: 出力
+  # STEP 3: vercel.json を自動作成
   # ============================================================================
   
   step_3:
-    name: "JSON出力（1段目）"
+    name: "vercel.json を自動作成"
     status: MANDATORY
     skip_allowed: false
     
     action: |
       output_templates から選択したテンプレートを、
-      プレースホルダーを置換してJSON形式で出力する
+      プレースホルダーを置換して、write ツールで vercel.json を自動作成する
     
-    critical_rules:
-      - "🚨 コードブロック（```）は絶対に使用しない"
-      - "🚨 JSONの前に説明文を追加しない"
-      - "🚨 まずJSONのみを出力（完了報告は次のstep_4で）"
-    
-    output_format: |
-      正しい出力（1段目のJSONのみ）：
+    method:
+      tool: "write"
+      target: "vercel.json"
       
+      content: |
+        output_templates.pattern_B（推奨）または pattern_A を選択し、
+        {APEX_DOMAIN}, {WWW_DOMAIN} を正規化後の値に置換したJSON
+    
+    safety_check:
+      name: "既存ファイルチェック（no-op）"
+      status: OPTIONAL
+      
+      process: |
+        1. read_file で既存の vercel.json を読み込む（可能な場合）
+        2. 生成する内容と比較
+        3. 同一内容なら「既存と同一のため変更不要」と通知
+        4. 異なる内容、または読み取れない場合は通常通り作成
+      
+      note: "ファイルが読み取れない場合は、このチェックをスキップして通常通り作成"
+    
+    example_content: |
       {
         "redirects": [
           {
@@ -503,9 +517,10 @@ workflow:
         ]
       }
     
-    note: |
-      この時点では完了報告は出力しない。
-      JSONのみを出力し、次のstep_4で完了報告を続ける。
+    critical_rules:
+      - "🚨 write ツールを使用して vercel.json を作成"
+      - "🚨 既存ファイルがある場合は上書きされる（no-op チェックで回避可能）"
+      - "🚨 JSONのフォーマットが正しいこと"
     
     next_step: "step_4"
   
@@ -532,16 +547,15 @@ workflow:
       [SEO情報（オプショナル）]
     
     response_template: |
-      ✅ vercel.json の内容を出力しました！
+      ✅ vercel.json を作成しました！
       
       🎯 リダイレクトの目的: すべてのアクセスを https://{WWW_DOMAIN} に統一
       
       📋 次のステップ:
-      1. 上記のJSONを vercel.json ファイルに保存
-      2. Vercel にデプロイ（git push または vercel deploy）
-      3. Vercel のダッシュボードでカスタムドメインを登録
-      4. DNS設定（Aレコード/CNAMEレコード）
-      5. https://{APEX_DOMAIN} と https://{WWW_DOMAIN} でアクセス確認
+      1. Vercel にデプロイ（git push または vercel deploy）
+      2. Vercel のダッシュボードでカスタムドメインを登録
+      3. DNS設定（Aレコード/CNAMEレコード）
+      4. https://{APEX_DOMAIN} と https://{WWW_DOMAIN} でアクセス確認
       
       💡 リダイレクト設定:
       - http://{APEX_DOMAIN} → https://{WWW_DOMAIN}
@@ -874,6 +888,92 @@ workflow:
       このステップはオプショナルですが、強く推奨されます。
       優先順位に従って情報源を試行し、納品物として最適化されたSEO情報を提供します。
       将来的にSEO対策ワークフローと統合する可能性があります。
+  
+  # ============================================================================
+  # STEP 5b: SEO情報を layout.tsx に書き込む
+  # ============================================================================
+  
+  step_5b:
+    name: "layout.tsx に metadata を書き込む（自動実装）"
+    status: HIGHLY_RECOMMENDED
+    skip_allowed: true
+    condition: "step_5 でSEO情報が生成された場合のみ実行"
+    
+    description: |
+      step_5 で生成した SEO情報（title, description, keywords）を
+      app/layout.tsx に自動的に書き込む。
+    
+    process:
+      step_1:
+        action: "app/layout.tsx を読み込む"
+        tool: "read_file"
+        target: "app/layout.tsx"
+      
+      step_2:
+        action: "既存 metadata の有無を確認"
+        
+        check: |
+          "export const metadata" が存在するか確認
+        
+        case_1:
+          condition: "既存 metadata が存在する"
+          action: "既存の metadata を置換"
+          
+          method:
+            tool: "search_replace"
+            
+            old_string: |
+              export const metadata: Metadata = {
+                // 既存の内容すべて
+              };
+            
+            new_string: |
+              export const metadata: Metadata = {
+                title: "{step_5で生成したtitle}",
+                description: "{step_5で生成したdescription}",
+                keywords: [{step_5で生成したkeywords}],
+              };
+        
+        case_2:
+          condition: "metadata が存在しない"
+          action: "新規作成"
+          
+          method:
+            tool: "search_replace"
+            
+            find_position: "export default function RootLayout の直前"
+            
+            insert: |
+              export const metadata: Metadata = {
+                title: "{step_5で生成したtitle}",
+                description: "{step_5で生成したdescription}",
+                keywords: [{step_5で生成したkeywords}],
+              };
+              
+          
+          import_check:
+            check: "import { Metadata } from 'next' が存在するか"
+            if_not_exists: |
+              ファイルの先頭に以下を追加：
+              import { Metadata } from 'next';
+      
+      step_3:
+        action: "完了通知を出力"
+        
+        template: |
+          
+          ✅ app/layout.tsx に metadata を書き込みました！
+          
+          設定内容:
+          - title: {title}（{文字数} 文字）
+          - description: {description}（{文字数} 文字）
+          - keywords: [{keywords}]
+          
+          💡 Google提出ワークフローで openGraph, twitter も追加できます。
+    
+    note: |
+      step_5 でSEO情報が生成されなかった場合（すべての情報源が読めない）は、
+      このステップもスキップされる。
 
 # ==============================================================================
 # 使用例
@@ -905,16 +1005,15 @@ usage_examples:
         ]
       }
       
-      ✅ vercel.json の内容を出力しました！
+      ✅ vercel.json を作成しました！
       
       🎯 リダイレクトの目的: すべてのアクセスを https://www.example.jp に統一
       
       📋 次のステップ:
-      1. 上記のJSONを vercel.json ファイルに保存
-      2. Vercel にデプロイ（git push または vercel deploy）
-      3. Vercel のダッシュボードでカスタムドメインを登録
-      4. DNS設定（Aレコード/CNAMEレコード）
-      5. https://example.jp と https://www.example.jp でアクセス確認
+      1. Vercel にデプロイ（git push または vercel deploy）
+      2. Vercel のダッシュボードでカスタムドメインを登録
+      3. DNS設定（Aレコード/CNAMEレコード）
+      4. https://example.jp と https://www.example.jp でアクセス確認
       
       💡 リダイレクト設定:
       - http://example.jp → https://www.example.jp
@@ -947,12 +1046,21 @@ usage_examples:
       }
       
       ⚠️ 注意: keywords メタタグは廃止されましたが、記録として残しています。
+      
+      ✅ app/layout.tsx に metadata を書き込みました！
+      
+      設定内容:
+      - title: 株式会社メディアプルーフ - 東京の校閲サービス | メディアの正しさを担保（32 文字）
+      - description: 株式会社メディアプルーフは...（120 文字）
+      - keywords: ["校閲サービス 東京", "ニュース番組 校閲", ...]
+      
+      💡 Google提出ワークフローで openGraph, twitter も追加できます。
     
     notes: |
-      - JSONが先に出力される（1段目）
-      - その後、完了報告が続く（2段目）
-      - SEO情報は情報源の優先順位に従って生成（3段目・オプショナル）
-      - コードブロック（```）は使用しない
+      - vercel.json が自動作成される（1段目）
+      - その後、完了報告が出力される（2段目）
+      - SEO情報が生成・表示される（3段目・オプショナル）
+      - SEO情報が layout.tsx に自動書き込みされる（4段目・オプショナル）
   
   example_2:
     user_input: "ドメイン接続のvercel.jsonを作成して"
@@ -990,13 +1098,12 @@ usage_examples:
         ]
       }
       
-      ✅ vercel.json の内容を出力しました！
+      ✅ vercel.json を作成しました！
       
       🎯 リダイレクトの目的: すべてのアクセスを https://www.example.jp に統一
       
       📋 次のステップ:
-      1. 上記のJSONを vercel.json ファイルに保存
-      2. Vercel にデプロイ...
+      1. Vercel にデプロイ...
       
       📊 生成したSEO情報:
       （※ page.tsx と components から抽出した情報を基に生成）
@@ -1015,9 +1122,19 @@ usage_examples:
       【実装方法】
       app/layout.tsx の metadata オブジェクトに以下を追加：
       ...
+      
+      ✅ app/layout.tsx に metadata を書き込みました！
+      
+      設定内容:
+      - title: 株式会社メディアプルーフ - 東京の校閲サービス | メディアの正しさを担保（32 文字）
+      - description: ...（110 文字）
+      - keywords: ["校閲サービス 東京", ...]
+      
+      💡 Google提出ワークフローで openGraph, twitter も追加できます。
     
     note: |
-      about.yamlがなくても、コードから情報を抽出してSEO情報を生成できる。
+      about.yamlがなくても、コードから情報を抽出してSEO情報を生成し、
+      layout.tsx に自動書き込みできる。
       優先順位2のfallbackが機能する例。
   
   example_3:
@@ -1317,6 +1434,19 @@ troubleshooting:
 # ==============================================================================
 
 changelog:
+  v1.2:
+    date: "2025-11-04"
+    changes:
+      - "step_3: write ツールで vercel.json を自動作成（完全自動化）"
+      - "step_5b: SEO情報を layout.tsx に自動書き込み（新規追加）"
+      - "チャット出力のみ → ファイル自動作成に変更"
+      - "SEO情報の表示のみ → 自動実装に変更"
+      - "ユーザーのコピペ作業を完全削減"
+      - "no-op チェック（既存ファイルチェック）を維持"
+      - "完了報告から「上記のJSONを保存」の手順を削除"
+      - "Google提出ワークフローと統一（write/search_replace ツール使用）"
+      - "4段出力: vercel.json作成 → 完了報告 → SEO情報生成 → layout.tsx書き込み"
+  
   v1.1:
     date: "2025-11-03"
     changes:
