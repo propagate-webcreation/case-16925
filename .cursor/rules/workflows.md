@@ -257,3 +257,58 @@ All generated forms MUST include:
 - Use about.yaml's contact_defaults.email for adminEmail
 - Consistent with domain connection workflow
 
+---
+
+## 🖼️ Image Fetch Workflow
+
+**実行方法:** `/image-fetch` コマンドを使用してください
+
+### Context Files
+- `memories/image_fetch_workflow.yaml`
+
+### Critical Rules
+
+#### Rule 1: Always Load Workflow File
+When executing image fetch workflow, **always read `memories/image_fetch_workflow.yaml` first**.
+
+This file contains:
+- ✅ Step 0: OS selection (Mac/Windows)
+- ✅ Step 1: Batch fetch image lists from Google Drive
+- ✅ Step 2: Image selection (photos, backgrounds)
+- ✅ Step 3: selected.json validation
+- ✅ Step 4: Image download execution
+
+#### Rule 2: OS Selection (CRITICAL)
+- 🚨 **MUST** ask user for OS (Mac or Windows) at the beginning
+- Use OS-specific commands:
+  - Mac/Linux: bash commands
+  - Windows: PowerShell commands
+
+#### Rule 3: Filename Exact Match (🚨 CRITICAL)
+**Absolute rules for filename handling:**
+- 🚨 Read *_index.json files completely as JSON arrays
+- 🚨 Copy each filename exactly as-is (do NOT modify even 1 character)
+- 🚨 **NEVER** infer or construct filenames from grep results or partial matches
+- 🚨 After selection, verify each filename exists in original JSON using grep -F (exact match)
+
+**Forbidden:**
+- ❌ Inferring filenames from partial matches
+- ❌ Constructing filenames
+- ❌ Modifying filenames in any way
+
+#### Rule 4: Structured JSON Output
+- Output format: `{ "photos": [...], "backgrounds": [...], "illusts": [] }`
+- If selected.json exists, read it and update only the relevant key
+- Preserve other keys unchanged
+- No explanations, code blocks, or comments
+
+#### Rule 5: Exclusion Rules
+- Exclude filenames containing ", " (comma + space)
+- Exclude filenames with special characters (comma, semicolon, etc.)
+
+### Background Filename Pattern
+Backgrounds use structured naming:
+`bg--vibe--pattern_type--repeatability--palette--brightness--contrast--busyness--gradient_axis--size.ext`
+
+Example: `bg--simple--gradient--non-tile--warm--light--mid--calm--vertical--1920x1080.png`
+
