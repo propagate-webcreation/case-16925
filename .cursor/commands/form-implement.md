@@ -6,8 +6,7 @@
 
 - `memories/form_workflow.yaml`
 - `.cursor/rules/workflows.md` （Contact Form Implementation Workflow セクション）
-- `FORM実装/FORMREADME.md`
-- `FORM実装/FORMTODO.md`
+- `/Users/horiuchiharu/Library/Mobile Documents/.Trash/FORM実装/FORMREADME.md` （正しいサンプルコード、特に469行目と506行目のpattern属性）
 
 ## Instructions
 
@@ -22,15 +21,27 @@
 ## Critical Rules
 
 ### Information Collection
-1. **about.yaml から情報を収集（優先）:**
-   - site.name → site_id, site_name
-   - contact_defaults.email → admin_email
-   - vercel.json の BASE_URL → productionDomain
-   - pages[id:contact].fields → form fields
+1. **app/ のファイル（実際のページ）から情報を収集（優先）:**
+   - app/**/*.page.tsx を検索
+   - 各ページを読み込んで内容を分析
+   - h1, h2, metadata, サービス説明から会社名・業種を特定
+   - Footer から連絡先メールアドレスを取得
+   - vercel.json から BASE_URL を取得
+   - 業種に応じて適切なフォームフィールドを推測
+     - BtoB企業: 会社名、部署名
+     - 予備校・教育: 学年、学校名
+     - 不動産: 物件種別、希望エリア
+     - 一般企業: 会社名、電話番号
 
-2. **about.yaml がない場合:**
-   - ユーザーに対話的に確認
-   - サイトID、会社名、メールアドレス、フィールド定義
+2. **about.yaml（補完的・基本情報のみ）:**
+   - app/ で情報が不足する場合に使用
+   - **⚠️ フォームフィールド情報は取得しない**（デザイン完成後に修正されている可能性があるため）
+   - 会社名、メールアドレスなどの基本情報のみ
+
+3. **ユーザーに確認:**
+   - app/ と about.yaml のどちらからも情報が取得できない場合
+   - サイトID、会社名、メールアドレス
+   - フィールド定義は app/contact/ の既存フォームが最優先
 
 ### JSON Generation
 - 管理画面登録用のJSONを生成
@@ -38,16 +49,35 @@
 - productionDomain: https:// を含む完全なURL（vercel.json から取得）
 - fields: 各フィールドの name, label, type, required
 
-### Component Generation
-- **app/contact/page.tsx を write ツールで自動作成**
-- "use client" ディレクティブ必須
-- FormHandler.init() の第1引数に site_id を設定
-- フォームの id 属性は "contactForm"
+### Component Modification (既存フォームを修正)
+- **🚨 重要: 既存の app/contact/page.tsx を search_replace で修正（write で新規作成ではない）**
+- **既存のデザイン・レイアウト・className を保持**
+- API連携に必要な部分のみを追加
+
+**7箇所を順番に search_replace で修正:**
+1. "use client" ディレクティブ追加
+2. import 文追加（useState, useEffect, Script）
+3. useState 追加（状態管理）
+4. セキュリティ関数追加（3つ: escapeHtml, sanitizeInput, validateForm）
+5. useEffect + initializeFormHandler 追加（API連携）
+6. <form> タグ修正（id="contactForm" と onSubmit={handleSubmit} 追加）
+7. ステータスメッセージ + Script タグ追加
+
+**FormHandler.init() の設定:**
+  - 第1引数: site_id（step_1で決定）
+  - 第2引数のオプション:
+    - **apiBaseUrl: "https://universal-form-api.vercel.app"** （🚨 必須）
+    - beforeSend, onSuccess, onError
+
+**重要なポイント:**
+- **pattern属性:** 既存フォームの pattern はそのまま保持（修正しない）
+- **SDK URL:** `https://universal-form-api.vercel.app/form-handler.js` （form-handler.js、sdk.js ではない）
+- フォームの id 属性: "contactForm"
 
 ### Security Measures (🚨 MANDATORY)
 **All generated forms MUST include:**
 - ✅ **maxLength attribute** (文字数制限)
-- ✅ **pattern attribute** (危険な文字制限: `[^\<\>\&\"\']+"`)
+- ✅ **pattern attribute** (危険な文字制限: `pattern="[^\<\>\&\&quot;\']+"` ダブルクォートは &quot;)
 - ✅ **escapeHtml() function** (XSS対策)
 - ✅ **sanitizeInput() function** (HTMLタグ除去)
 - ✅ **validateForm() function** (送信前バリデーション)

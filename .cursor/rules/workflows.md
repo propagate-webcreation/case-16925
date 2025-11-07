@@ -223,29 +223,80 @@ This file contains:
 
 #### Rule 2: Information Collection
 Collect information from:
-1. about.yaml (site configuration sheet) ← Priority
-2. User input (if about.yaml is unavailable)
+1. **app/contact/page.tsx (existing form)** ← TOP Priority
+   - Check if app/contact/page.tsx exists
+   - If exists, extract field configuration directly from the form:
+     - Extract name attributes from <input>, <select>, <textarea>
+     - Extract label text
+     - Check required attribute
+     - Check type attribute
+   - **⚠️ Form fields MUST come from existing form code, NOT from about.yaml**
+
+2. **app/ files (if no existing form)**
+   - Analyze app/page.tsx and other pages
+   - Identify business type and service content
+   - Infer appropriate form fields based on business type
+
+3. **about.yaml (supplementary, basic info only)**
+   - Use ONLY for basic information (company name, email)
+   - **Do NOT use for form field information** (may be outdated after design completion)
+
+4. **User input (last resort)**
+   - If app/ and about.yaml provide insufficient information
 
 Required information:
 - Site ID (lowercase, numbers, hyphens only)
-- Company name
-- Admin email address
-- Form fields definition
+- Company name (from app/page.tsx h1 or metadata.title)
+- Admin email address (from Footer or contact page)
+- Production domain (from vercel.json BASE_URL)
+- Form fields definition (inferred from business type)
 
-#### Rule 3: Automatic File Generation
+#### Rule 3: Automatic File Generation & Modification
 1. **Generate JSON for admin panel:**
    - Use write tool or display in chat
    - User will paste this JSON into admin panel
 
-2. **Generate Next.js component:**
-   - Use write tool to create app/contact/page.tsx
-   - Include all security measures (escapeHtml, sanitizeInput, validateForm)
-   - Site ID must match the registered ID
+2. **Modify existing Next.js component (🚨 IMPORTANT):**
+   - 🚨 **Use search_replace to modify existing app/contact/page.tsx** (do NOT use write tool to create new file)
+   - **Preserve existing design, layout, and className**
+   - Add only API integration code
+   
+   **7 modifications using search_replace (in order):**
+   1. Add "use client" directive
+   2. Add imports (useState, useEffect, Script)
+   3. Add useState (state management)
+   4. Add security functions (escapeHtml, sanitizeInput, validateForm)
+   5. Add useEffect + initializeFormHandler (API integration)
+   6. Modify <form> tag (add id="contactForm" and onSubmit={handleSubmit})
+   7. Add status message + Script tag
+   
+   **🚨 CRITICAL - FormHandler.init() Configuration:**
+   - **First argument:** site_id (determined in step_1)
+   - **Second argument options (REQUIRED):**
+     - **apiBaseUrl: "https://universal-form-api.vercel.app"** (MANDATORY, form submission will fail without this)
+     - beforeSend, onSuccess, onError callbacks
+   
+   **🚨 CRITICAL - Pattern Attribute (User Verified Solution):**
+   - **Correct value:** `pattern="[^\<\>\&\&quot;\']+"` (use &quot; for double quote)
+   - **Solution:** Replace " with HTML entity &quot; to avoid smart quote conversion
+   - **Verified:** User tested and confirmed this works without errors
+   - **Wrong:** `pattern="[^\<\>\&\"\']+"` (normal quote converts to smart quote)
+   - **Method:** Use HTML entities for quotes in pattern attribute
+   
+   **🚨 CRITICAL - SDK URL:**
+   - **Correct:** `https://universal-form-api.vercel.app/form-handler.js`
+   - **Wrong:** `https://universal-form-api.vercel.app/sdk.js`
+   
+   **Process:**
+   1. Read FORMREADME.md (lines 318-585 for complete sample code)
+   2. Extract pattern attribute from line 469: `pattern="[^\<\>\&\"\']+""`
+   3. Use this exact value (do NOT modify or convert characters)
+   4. Generate component based on step_1 fields
 
 #### Rule 4: Security Measures (MANDATORY)
 All generated forms MUST include:
 - ✅ maxLength attribute (character limit)
-- ✅ pattern attribute (dangerous character restriction)
+- ✅ pattern attribute (dangerous character restriction: `pattern="[^\<\>\&\&quot;\']+"` with &quot;)
 - ✅ escapeHtml() function (XSS prevention)
 - ✅ sanitizeInput() function (HTML tag removal)
 - ✅ validateForm() function (pre-submit validation)
