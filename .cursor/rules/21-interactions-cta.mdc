@@ -44,3 +44,6 @@ alwaysApply: true
   </div>
 </section>
 
+## CTAセクション（共有実装の前提）
+- CTAは `app/components/shared/CTA.tsx` の単一実装のみを使用
+- 共有CTAの構造・スタイルは同コンポーネント内で一元管理し、各ページでのCSS追加や上書きを禁止

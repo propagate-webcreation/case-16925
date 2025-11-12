@@ -18,8 +18,11 @@ alwaysApply: true
 - 1セクション=1コンポーネント。Tailwindのみ使用。
 
 ## 共通化
-- ヘッダー/フッターは shared に配置し全ページで共通使用。
-- CTA等の再利用は shared 化し、デザイントークンで差分管理。
+- ヘッダー/フッター：`app/components/shared/Header.tsx` / `app/components/shared/Footer.tsx` を全ページ共通で使用
+- CTA：`app/components/shared/CTA.tsx` に**単一実装**し、全ページ共通で使用（複製・派生不可）
+- 差分の渡し方：**props 経由のみ**（文言/リンク/配色は単一の設定ソース：`app/config/cta.config.ts` 等）
+- スタイル：共有CTA内で一元管理（各ページ側でのCSS追加・上書き禁止）
+- 禁止：ページ固有のCTAコンポーネント作成（例：`CTAHome.tsx`/`CTAAbout.tsx`）、共有CTAの複製・派生・上書き
 
 ## ヘッダー
 - ロゴは Link href="/" を設定してトップ遷移。

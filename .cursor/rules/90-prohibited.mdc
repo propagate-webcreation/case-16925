@@ -20,3 +20,5 @@ alwaysApply: true
 - ヘッダーの問い合わせCTAをテキストリンク風にすること（下線のみ/透明背景/角丸不揃い/アイコンなし/ホバー不一致）。
 - Instagram以外のボタンでのグラデーション背景使用（ボタンは原則ソリッドカラー）
 - ヒーロー画像の外部URL/ベース64埋め込み、または `/public/img/photos/` 以外からの参照
+- ページ固有のCTAコンポーネント作成（例：CTAHome.tsx / CTAAbout.tsx）
+- 共有CTA（app/components/shared/CTA.tsx）の複製・派生・上書き
