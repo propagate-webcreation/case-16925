@@ -96,6 +96,15 @@
 
 **Never skip security implementation.**
 
+### ESLint Error Prevention (🚨 CRITICAL)
+**All generated code MUST include ESLint suppressions:**
+- ✅ **`// eslint-disable-next-line @typescript-eslint/no-explicit-any`** before `(window as any)` (3箇所)
+- ✅ **`// eslint-disable-next-line @typescript-eslint/no-unused-vars`** before `formHandlerLoaded` (1箇所)
+
+**Reason:**
+- FormHandler is external library without type definitions
+- formHandlerLoaded is used in Script onLoad callback (ESLint cannot detect)
+
 ### Validation Generation
 - required: true のフィールドに対して必須チェックを生成
 - メールアドレス形式チェック

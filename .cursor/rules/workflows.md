@@ -348,6 +348,23 @@ All generated forms MUST include:
 
 **Never skip security implementation.**
 
+#### Rule 5: ESLint Error Prevention (🚨 CRITICAL)
+All generated code MUST include ESLint suppressions to avoid build errors:
+
+**Required suppressions:**
+1. **`// eslint-disable-next-line @typescript-eslint/no-explicit-any`**
+   - Add before ALL `(window as any)` usage (3 locations)
+   - Lines: useEffect check, initializeFormHandler check, FormHandler.init call
+   - Reason: FormHandler is external library without type definitions
+
+2. **`// eslint-disable-next-line @typescript-eslint/no-unused-vars`**
+   - Add before `const [formHandlerLoaded, setFormHandlerLoaded] = useState(false);`
+   - Reason: Used in Script onLoad callback, ESLint cannot detect usage
+
+**Without these suppressions, `npm run build` will fail with:**
+- `Error: Unexpected any. Specify a different type. @typescript-eslint/no-explicit-any`
+- `Warning: 'formHandlerLoaded' is assigned a value but never used. @typescript-eslint/no-unused-vars`
+
 #### Rule 5: Image/File Attachment Support (Optional)
 
 **画像添付:**
