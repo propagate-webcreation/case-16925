@@ -2,7 +2,7 @@ import { Mail } from "lucide-react";
 
 export default function ContactSection() {
   return (
-    <section id="contact" className="py-20 md:py-28 bg-base">
+    <section id="contact" className="py-20 md:py-28 bg-white">
       <div className="max-w-2xl mx-auto px-4">
         <h2 className="text-2xl md:text-[32px] font-bold text-main text-center font-display mb-4 tracking-wide">
           お問い合わせ

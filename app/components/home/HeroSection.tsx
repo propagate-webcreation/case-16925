@@ -9,8 +9,8 @@ export default function HeroSection() {
       className="relative h-[500px] md:h-[650px] flex items-center justify-center overflow-hidden mt-16"
     >
       <Image
-        src="/images/hero.png"
-        alt="ビジネスの安心を支える損害保険"
+        src="/images/hero.webp"
+        alt="企業の安心を支えるプロフェッショナルなビジネス環境"
         fill
         className="object-cover"
         priority

@@ -1,6 +1,6 @@
 const companyInfo = [
   { label: "会社名", value: "sumire for plus株式会社" },
-  { label: "代表者", value: "酒井（仮）" },
+  { label: "代表者", value: "酒井" },
   { label: "設立", value: "2025年3月" },
   {
     label: "所在地",
@@ -13,7 +13,7 @@ const companyInfo = [
 
 export default function CompanyInfoSection() {
   return (
-    <section id="company" className="py-20 md:py-28 bg-white">
+    <section id="company" className="py-20 md:py-28 bg-base">
       <div className="max-w-4xl mx-auto px-4">
         <h2 className="text-2xl md:text-[32px] font-bold text-main text-center font-display mb-12 tracking-wide">
           会社情報

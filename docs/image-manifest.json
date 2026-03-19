@@ -3,9 +3,30 @@
     "id": "hero-bg",
     "page": "/",
     "section": "メインビジュアル",
-    "path": "/images/hero.png",
-    "alt": "ビジネスの安心を支える損害保険",
+    "path": "/images/hero.webp",
+    "alt": "企業の安心を支えるプロフェッショナルなビジネス環境",
     "aspect_ratio": "16:9",
-    "prompt_summary": "Professional dark blue business environment, Japanese corporate office, no text, no watermark"
+    "prompt": "Professional modern Japanese corporate office interior, elegant conference room with large windows overlooking city skyline, warm ambient lighting, dark blue and gold color accents, clean and sophisticated atmosphere, high resolution, well-lit, clean composition, detailed, professional photography style, no text, no letters, no watermark, no people",
+    "negative_prompt": "low quality, blurry, distorted, deformed, text, watermark, amateur, inconsistent style, cluttered, dark, grainy"
+  },
+  {
+    "id": "representative",
+    "page": "/",
+    "section": "代表挨拶",
+    "path": "/images/representative.webp",
+    "alt": "代表 酒井のプロフィール写真",
+    "aspect_ratio": "3:4",
+    "prompt": "Professional portrait of a Japanese businesswoman in her 30s, wearing a navy blue business suit, confident and warm smile, modern bright office background with soft natural lighting, upper body shot, professional headshot style, high resolution, well-lit, clean composition, detailed, no text, no letters, no watermark",
+    "negative_prompt": "low quality, blurry, distorted, deformed, bad anatomy, deformed hands, wrong fingers, text, watermark, amateur, inconsistent style, casual clothes, dark lighting"
+  },
+  {
+    "id": "cta-bg",
+    "page": "/",
+    "section": "中間CTA",
+    "path": "/images/cta-bg.webp",
+    "alt": "ビジネスの信頼を象徴するオフィス風景",
+    "aspect_ratio": "21:9",
+    "prompt": "Aerial view of modern Tokyo cityscape at dusk, Minato ward area, professional atmosphere, warm golden hour lighting mixed with cool blue tones, clean urban landscape, high resolution, well-lit, clean composition, detailed, professional photography style, no text, no letters, no watermark, no people",
+    "negative_prompt": "low quality, blurry, distorted, deformed, text, watermark, amateur, inconsistent style, dark, grainy, night time"
   }
 ]
