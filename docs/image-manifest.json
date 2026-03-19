@@ -1,0 +1,11 @@
+[
+  {
+    "id": "hero-bg",
+    "page": "/",
+    "section": "メインビジュアル",
+    "path": "/images/hero.png",
+    "alt": "ビジネスの安心を支える損害保険",
+    "aspect_ratio": "16:9",
+    "prompt_summary": "Professional dark blue business environment, Japanese corporate office, no text, no watermark"
+  }
+]

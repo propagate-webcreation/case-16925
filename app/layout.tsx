@@ -1,12 +1,25 @@
-import "../lib/fonts/_active.css";
-import "../lib/fonts/_vars.css";
 import type { Metadata } from "next";
+import { Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-noto-sans",
+  display: "swap",
+});
+
+const notoSerifJP = Noto_Serif_JP({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-noto-serif",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Default Setting",
-  description: "Webサイト制作用の初期設定環境",
+  title: "sumire for plus株式会社",
+  description: "AIG損害保険正規代理店",
 };
 
 export default function RootLayout({
@@ -20,7 +33,8 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body
-        className="antialiased font-body"
+        suppressHydrationWarning={true}
+        className={`${notoSansJP.variable} ${notoSerifJP.variable} antialiased font-body text-foreground overflow-x-hidden`}
       >
         {children}
         <Script
