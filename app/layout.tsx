@@ -74,21 +74,22 @@ export default function RootLayout({
                 }
                 return 'other';
               }
+
               function detectCtaType(href) {
-                if (/line\\.me|line\\.naver\\.jp/i.test(href)) return 'line';
-                if (/instagram\\.com/i.test(href)) return 'instagram';
-                if (/youtube\\.com|youtu\\.be/i.test(href)) return 'youtube';
-                if (/twitter\\.com|x\\.com/i.test(href)) return 'x';
-                if (/facebook\\.com|fb\\.com/i.test(href)) return 'facebook';
-                if (/tiktok\\.com/i.test(href)) return 'tiktok';
-                if (/docs\\.google\\.com\\/forms|forms\\.office\\.com|typeform\\.com|jotform\\.com|wufoo\\.com/i.test(href)) return 'external_form';
+                if (/line\.me|line\.naver\.jp/i.test(href)) return 'line';
+                if (/docs\.google\.com\/forms|forms\.office\.com|typeform\.com|jotform\.com|wufoo\.com/i.test(href)) return 'external_form';
                 if (/^tel:/i.test(href)) return 'tel';
                 if (/^mailto:/i.test(href)) return 'mailto';
                 return null;
               }
+
               function isExternalLink(href) {
-                try { var link = new URL(href, window.location.origin); return link.hostname !== window.location.hostname; } catch(e) { return false; }
+                try {
+                  var link = new URL(href, window.location.origin);
+                  return link.hostname !== window.location.hostname;
+                } catch(e) { return false; }
               }
+
               document.addEventListener('click', function(e) {
                 var a = e.target.closest('a');
                 if (!a || !a.href) return;
@@ -99,6 +100,20 @@ export default function RootLayout({
                 var position = detectPosition(a);
                 var eventName = 'cta_' + ctaType + '_' + position;
                 if (typeof gtag === 'function') gtag('event', eventName, { link_url: href, cta_type: ctaType, cta_position: position });
+              });
+              document.addEventListener('click', function(e) {
+                var a = e.target.closest ? e.target.closest('a') : null;
+                if (a && a.href) return;
+                var el = e.target.closest ? e.target.closest('button, [role="button"], div, span') : e.target;
+                if (!el) return;
+                var text = (el.textContent || '').trim();
+                var cls = ((el.className && typeof el.className === 'string') ? el.className : '').toLowerCase();
+                var elId = (el.id || '').toLowerCase();
+                var ctaType = null;
+                if (/LINE|ライン/i.test(text) || /\bline[-_]?(?:btn|button|cta|link|banner|add)\b/i.test(cls + ' ' + elId)) ctaType = 'line';
+                if (!ctaType) return;
+                var position = detectPosition(el);
+                if (typeof gtag === 'function') gtag('event', 'cta_' + ctaType + '_' + position, { cta_type: ctaType, cta_position: position });
               });
               var CONTACT_KW = /contact|inquiry|enquiry|お問い合わせ|問い合わせ|お問合せ|問合せ|consultation|相談|資料請求|見積|応募|エントリー|申し込み|申込/i;
               var EXCLUDE_KW = /search|login|signin|sign-in|signup|sign-up|register|subscribe|newsletter|ログイン|検索|新規登録/i;
